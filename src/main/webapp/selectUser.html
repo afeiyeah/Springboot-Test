@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		//分页查询，每页显示2条数据；第一次查询的是第一页的数据，后续点击“更多”按钮，继续下一页的查询
+		var pageSize=2;
+		var pageNum=1;
+		$("#select").click(function(){
+			selectPageUser();
+			
+		});
+		function selectPageUser(){
+			$.ajax({
+				type:"get",
+				url:"selectUser/"+pageSize+"/"+(pageNum++),
+				data:{},
+				dataType:"json",
+				success:function(msg){
+					alert("pageNum="+pageNum);
+					if(pageNum==2){
+						//$("#user").not(":eq(0)").empty();
+						$("#user tr:not(:first)").remove();
+					}
+					if(msg.length==0){
+						alert("没有更多数据");
+					}else{
+						for(var i in msg){
+							var tr;
+							tr="<tr><td>"+msg[i].uid+"</td>"+"<td>"+msg[i].uname+"</td>"+"<td>"+msg[i].age+"</td><td><a class='c' data-id='"+msg[i].uid+"' href='#'>删除</a></td><td><a href='updateUser.html?uid="+msg[i].uid+"'>编辑</a></td></tr>";
+							$("#user").append(tr);
+						}
+						$("#more")[0].disabled=false;
+					}
+					
+				}
+			})
+		}
+		//点击more的事件
+		$("#more").click(function(){
+			selectPageUser();
+		});
+		//点击删除，删除用户信息
+		//页面后追加的元素进行事件绑定
+		//html任何标签都支持自定义属性
+		$(document).on("click",".c",function(){
+			var uid=$(this).attr("data-id");
+			alert(uid);
+			$.ajax({
+				type:"post",
+				url:"deleteUser/"+uid,
+				data:{},
+				dataType:"json",
+				success:function(msg){
+					pageNum=1;
+					selectPageUser();
+				}
+			})
+		})
+		
+	})
+</script>
+</head>
+<body>
+	<button type="button" id="select">查询用户信息</button>
+	<table id="user">
+		<tr>
+			<th>用户ID</th>
+			<th>用户名</th>
+			<th>年龄</th>
+			
+		</tr>
+	</table>
+	<button type="button" id="more" disabled="disabled">更多</button>
+</body>
+</html>

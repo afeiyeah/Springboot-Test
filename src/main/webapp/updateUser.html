@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var uid=location.href.substr(location.href.indexOf('=')+1);
+		$("#uid").val(uid);
+		$.ajax({
+			type:"post",
+			url:"getUserById",
+			data:{"uid":uid},
+			dataType:'json',
+			success:function(msg){
+				$("#age").val(msg.age);
+				$("#uname").val(msg.uname);
+			}
+			
+		});
+		
+		$("#update").click(function(){
+			$.ajax({
+				type:"post",
+				url:"updateUser",
+				data:$("#f1").serialize(),
+				dataType:'json',
+				success:function(msg){
+					location.href="selectUser.html";
+				}
+				
+			})
+			
+		})
+		
+		
+	})
+</script>
+</head>
+<body>
+	<form action="" id="f1">
+		<div>
+			<input type="hidden" name="uid" id="uid">
+		</div>
+		<div>
+			年龄：<input type="text" name="age" id="age">
+		</div>
+		<div>
+			用户名：<input type="text" name="uname" id="uname">
+		</div>
+		<div>
+			<button type="button" id="update">修改</button>
+		</div>
+	</form>
+
+</body>
+</html>
